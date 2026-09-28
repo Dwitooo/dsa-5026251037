@@ -1,6 +1,5 @@
 package lw02.prelab;
 
-import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
@@ -8,71 +7,73 @@ import java.util.Stack;
 
 public class Main {
     public static void main(String[] args) {
-        LinkedList<String[]> rawTransactions = new LinkedList<>();
+        LinkedList<String[]> transactions = new LinkedList<>();
         LinkedList<String[]> customers = new LinkedList<>();
-        Queue<String[]> transactionQueue = new LinkedList<>();
+        Queue<String[]> queue = new LinkedList<>();
         Stack<String[]> failedTransactions = new Stack<>();
 
-        InputStream inputStream = Main.class.getResourceAsStream("transactions.txt");
-        Scanner scanner = new Scanner(inputStream);
+        Scanner scanner = new Scanner(Main.class.getResourceAsStream("transactions.txt"));
 
-        while (scanner.hasNextLine()) {
-            String[] parts = scanner.nextLine().split("\\s+");
-            rawTransactions.add(parts);
-
-            String name = parts[0];
-            boolean exists = false;
-            for (String[] c : customers) {
-                if (c[0].equals(name)) {
-                    exists = true;
-                    break;
-                }
-            }
-            if (!exists) {
-                customers.add(new String[]{name, "0"});
-            }
+        while (scanner.hasNext()) {
+            String[] parts = new String[3];
+            parts[0] = scanner.next();
+            parts[1] = scanner.next();
+            parts[2] = scanner.next();
+            transactions.add(parts);
         }
+
         scanner.close();
 
-        transactionQueue.addAll(rawTransactions);
+        queue.addAll(transactions);
+        while (!queue.isEmpty()) {
+            String[] parts = queue.poll();
 
-        while (!transactionQueue.isEmpty()) {
-            String[] tx = transactionQueue.poll();
-            String name = tx[0];
-            String type = tx[1];
-            int amount = Integer.parseInt(tx[2]);
+            String name = parts[0];
+            String type = parts[1];
+            int amount = Integer.parseInt(parts[2]);
 
             String[] customer = null;
-            for (String[] c : customers) {
-                if (c[0].equals(name)) {
-                    customer = c;
+
+            for (String[] data : customers) {
+                if (data[0].equals(name)) {
+                    customer = data;
                     break;
                 }
+            }
+
+            if(customer == null){
+                customer = new String[]{name, "0"};
+                customers.add(customer);
             }
 
             int balance = Integer.parseInt(customer[1]);
+
             if (type.equals("DEPOSIT")) {
-                customer[1] = String.valueOf(balance + amount);
+                balance += amount;
+                customer[1] = String.valueOf(balance);
             } else if (type.equals("WITHDRAW")) {
-                if (amount > balance) {
-                    failedTransactions.push(tx);
+                if (amount <= balance) {
+                    balance -= amount;
+                    customer[1] = String.valueOf(balance);
                 } else {
-                    customer[1] = String.valueOf(balance - amount);
+                    failedTransactions.push(parts);
                 }
             }
         }
 
         System.out.println("=== Final Balances ===");
-        for (String[] c : customers) {
-            System.out.println(c[0] + ": " + c[1]);
+        for (String[] customer : customers) {
+            System.out.println(customer[0] + " : " + customer[1]);
         }
-        
+
         System.out.println();
 
         System.out.println("=== Failed Transactions ===");
         while (!failedTransactions.isEmpty()) {
-            String[] failed = failedTransactions.pop();
-            System.out.println(failed[0] + " " + failed[1] + " " + failed[2]);
+            String[] parts = failedTransactions.pop();
+            System.out.println(parts[0] + " " + parts[1] + " " + parts[2]);
         }
-    }
+
+    }    
+
 }
