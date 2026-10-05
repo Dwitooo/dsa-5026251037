@@ -22,7 +22,6 @@ public class Main {
         Scanner scanner = new Scanner(Main.class.getResourceAsStream("playlist.txt"));
         while (scanner.hasNextLine()) {
             String baris = scanner.nextLine().trim();
-            if (baris.isEmpty()) continue;
 
             String[] parts = baris.split(" ", 2);
             String perintah = parts[0];
@@ -86,7 +85,6 @@ public class Main {
         Scanner scanner = new Scanner(Main.class.getResourceAsStream("inventory.txt"));
         while (scanner.hasNextLine()) {
             String baris = scanner.nextLine().trim();
-            if (baris.isEmpty()) continue;
 
             String[] parts = baris.split(" ");
             String type = parts[0];
@@ -112,3 +110,36 @@ public class Main {
         System.out.println("Failed sales: " + failed);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
